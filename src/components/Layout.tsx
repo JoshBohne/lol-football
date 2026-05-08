@@ -4,9 +4,8 @@ import type { ReactNode } from "react";
 import { PATCH_VERSION } from "@/lib/champions";
 
 const LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/lineup", label: "Daily Lineup" },
-  { href: "/build", label: "Build" },
+  { href: "/", label: "Create Lineup" },
+  { href: "/grid", label: "Daily Grid" },
   { href: "/stats", label: "Stats" },
 ];
 

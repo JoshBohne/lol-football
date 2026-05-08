@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Check, Share2 } from "lucide-react";
-import { copyToClipboard } from "@/lib/share";
+import { copyToClipboard } from "@/lib/clipboard";
 import { cn } from "@/lib/utils";
 
 interface Props {
   text: string;
+  label?: string;
   className?: string;
 }
 
-export function ShareButton({ text, className }: Props) {
+export function ShareButton({ text, label = "Share", className }: Props) {
   const [copied, setCopied] = useState(false);
 
   async function handleClick() {
@@ -29,7 +30,7 @@ export function ShareButton({ text, className }: Props) {
       )}
     >
       {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
-      {copied ? "Copied!" : "Share"}
+      {copied ? "Copied!" : label}
     </button>
   );
 }

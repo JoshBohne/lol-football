@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "wouter";
 import { Shuffle, Trash2 } from "lucide-react";
 import type { Lineup, Position } from "@/types";
 import { POSITIONS, emptyLineup } from "@/data/positions";
@@ -81,10 +82,11 @@ export function BuildPage() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-teal/80">Build mode</p>
-          <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">Free play roster builder</h1>
+          <p className="text-xs uppercase tracking-[0.4em] text-teal/80">Create lineup</p>
+          <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">Build your 22-champion roster</h1>
           <p className="mt-1 text-sm text-white/60">
-            Tap a position, pick a champion. Fill all 22 to share your dream lineup.
+            Tap a position, pick a champion. Fill all 22 to share your dream lineup. Looking for the daily puzzle?{" "}
+            <Link href="/grid" className="text-gold hover:underline">Play today's grid →</Link>
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

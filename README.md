@@ -1,14 +1,13 @@
 # LoL Football
 
-> Daily Wordle-style puzzles where you assemble a 22-player football roster from League of Legends champions.
+> Daily League of Legends + football puzzles. Build a 22-champion roster, then test your champion knowledge against the daily grid.
 
 A free, ad-supported puzzle site. Static SPA built with Vite + React. No backend, no accounts — your stats live in your browser.
 
 ## Game modes
 
-- **Daily Lineup** — Guess the day's hidden 11-champion offensive lineup. Six attempts. Per-slot color feedback (🟩 right champ + position, 🟨 right champ wrong slot, ⬛ not in lineup). Shareable emoji grid.
-- **Build Mode** — Free-play 22-position roster builder. Save and share via URL hash.
-- **Immaculate Grid** *(coming soon)* — 3×3 trivia: pick a champion that fits row × column constraints.
+- **Create Lineup** *(home)* — Free-play 22-position roster builder. Save and share via URL hash.
+- **Daily Grid** — 3×3 Immaculate Grid. Each row and column is a region or class constraint; pick one champion per cell that satisfies both. New puzzle every UTC day.
 - **Connections** *(coming soon)* — 16 champions, 4 hidden squads. Group them all in 4 mistakes or fewer.
 
 ## Tech
@@ -37,9 +36,9 @@ public/                      static assets
 scripts/fetch-champions.ts   re-pull champion list from Data Dragon
 src/
 ├── components/              reusable UI (FootballField, ChampionPicker, ShareButton, AdSlot…)
-├── data/                    positions.ts (22 slots), champions.json (cached patch data)
-├── lib/                     seed (PRNG), lineup, stats, share, hashState
-├── pages/                   Home, Lineup (daily), Build (free play), Stats, NotFound
+├── data/                    positions.ts (22 slots), champions.json, attributes.ts (regions/tags)
+├── lib/                     seed (PRNG), grid, gridStats, hashState, clipboard
+├── pages/                   Build (Create Lineup, /), Grid (/grid), Stats (/stats), NotFound
 ├── App.tsx                  routes
 └── main.tsx                 entry
 ```
