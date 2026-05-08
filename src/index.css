@@ -3,24 +3,190 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: dark;
+    --foil-grad: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(239, 208, 131, 0.55) 45%,
+      rgba(239, 208, 131, 0.85) 50%,
+      rgba(239, 208, 131, 0.55) 55%,
+      transparent 80%
+    );
+  }
+
   html,
   body,
   #root {
     height: 100%;
   }
+
   body {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11", "tnum";
+    background-color: theme(colors.ink.1000);
+    /* Subtle warm vignette so the background reads as card stock under low light */
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(217, 181, 99, 0.05), transparent 60%),
+      radial-gradient(ellipse 70% 40% at 50% 110%, rgba(194, 80, 64, 0.03), transparent 60%);
   }
+
+  ::selection {
+    background-color: theme(colors.foil.DEFAULT);
+    color: theme(colors.ink.1000);
+  }
+
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    background: rgba(217, 181, 99, 0.18);
+    border-radius: 0;
+    border: 2px solid theme(colors.ink.1000);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(217, 181, 99, 0.4);
+  }
+}
+
+@layer components {
+  /* Tracked-caps eyebrow used across all pages */
+  .eyebrow {
+    @apply font-display text-eyebrow font-bold uppercase text-foil tracking-caps;
+    font-feature-settings: "tnum", "ss01";
+  }
+
+  .eyebrow-dim {
+    @apply font-display text-eyebrow font-semibold uppercase text-parchment-300 tracking-caps;
+  }
+
+  /* Display headline preset */
+  .display-xl {
+    @apply font-display font-bold leading-[0.92] tracking-[-0.005em] text-parchment-50;
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+  }
+
+  .display-lg {
+    @apply font-display font-bold leading-[0.95] tracking-[-0.005em] text-parchment-50;
+    font-size: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
+  }
+
+  /* Hairline rule with foil tick */
+  .rule-foil {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      theme(colors.foil.dim) 8%,
+      theme(colors.foil.dim) 92%,
+      transparent
+    );
+  }
+
+  /* Card chrome with foil corner cropmarks */
+  .card-plate {
+    @apply relative rounded-card bg-ink-800 shadow-card-deep;
+    background-image: linear-gradient(180deg, rgba(217, 181, 99, 0.04), transparent 40%);
+  }
+  .card-plate::before,
+  .card-plate::after {
+    content: "";
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: theme(colors.foil.dim);
+    pointer-events: none;
+  }
+  .card-plate::before {
+    top: 8px;
+    left: 8px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+  }
+  .card-plate::after {
+    bottom: 8px;
+    right: 8px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+  }
+
+  /* Foil button — primary CTA */
+  .btn-foil {
+    @apply inline-flex items-center gap-2 rounded-sm px-5 py-2.5 font-display text-sm font-bold uppercase tracking-caps text-ink-1000 transition;
+    background: linear-gradient(180deg, theme(colors.foil.bright), theme(colors.foil.DEFAULT) 60%, theme(colors.foil.dim));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+      0 8px 24px -10px rgba(217, 181, 99, 0.6);
+  }
+  .btn-foil:hover {
+    background: linear-gradient(180deg, theme(colors.foil.bright), theme(colors.foil.bright) 60%, theme(colors.foil.DEFAULT));
+  }
+  .btn-foil:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* Ghost button — secondary */
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-sm border border-ink-600 bg-transparent px-4 py-2 font-display text-sm font-semibold uppercase tracking-caps text-parchment-100 transition;
+  }
+  .btn-ghost:hover {
+    @apply border-foil-dim text-foil bg-ink-800;
+  }
+  .btn-ghost:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* Tabular numerics, used for puzzle numbers and stats */
+  .nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum", "lnum", "ss01";
+  }
+}
+
+@layer utilities {
+  /* Faint guilloche-like background pattern, for hero plates */
+  .bg-guilloche {
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        rgba(217, 181, 99, 0.025) 0,
+        rgba(217, 181, 99, 0.025) 1px,
+        transparent 1px,
+        transparent 6px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        rgba(217, 181, 99, 0.025) 0,
+        rgba(217, 181, 99, 0.025) 1px,
+        transparent 1px,
+        transparent 6px
+      );
+  }
+
+  /* Subtle card-tilt on hover */
+  .tilt-hover {
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .tilt-hover:hover {
+    transform: translateY(-2px) rotate(-0.6deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tilt-hover:hover,
+    .animate-foil-shine,
+    .animate-card-tilt-in,
+    .animate-fade-up,
+    .animate-pulse {
+      animation: none !important;
+      transform: none !important;
+    }
   }
 }

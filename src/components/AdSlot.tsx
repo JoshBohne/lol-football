@@ -9,10 +9,6 @@ interface Props {
 
 const ENABLED = import.meta.env.VITE_ADSENSE_CLIENT_ID && import.meta.env.VITE_ADSENSE_ENABLED === "true";
 
-/**
- * AdSense placeholder. Renders an inert div until the ADSENSE_ENABLED feature
- * flag is on AND a client ID is configured. Reserves CLS-safe vertical space.
- */
 export function AdSlot({ slot, variant = "banner", className }: Props) {
   const dimensions = variant === "banner" ? "h-20 sm:h-24" : "h-64 w-72";
   if (!ENABLED) {
@@ -20,7 +16,7 @@ export function AdSlot({ slot, variant = "banner", className }: Props) {
       <div
         data-ad-slot={slot}
         className={cn(
-          "flex items-center justify-center rounded-lg border border-dashed border-white/10 bg-navy-800/40 text-xs text-white/30",
+          "flex items-center justify-center rounded-sm border border-dashed border-ink-600/60 bg-ink-900/40 font-display text-[10px] uppercase tracking-caps text-parchment-300/60",
           dimensions,
           className,
         )}

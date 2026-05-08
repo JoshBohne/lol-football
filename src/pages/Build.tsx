@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { Shuffle, Trash2 } from "lucide-react";
+import { Shuffle, Trash2, ArrowRight } from "lucide-react";
 import type { Lineup, Position } from "@/types";
 import { POSITIONS, emptyLineup } from "@/data/positions";
 import { CHAMPIONS } from "@/lib/champions";
@@ -8,6 +8,7 @@ import { FootballField } from "@/components/FootballField";
 import { ChampionPicker } from "@/components/ChampionPicker";
 import { ShareButton } from "@/components/ShareButton";
 import { AdSlot } from "@/components/AdSlot";
+import { PageHeader } from "@/components/PageHeader";
 import { decodeLineup, encodeLineup } from "@/lib/hashState";
 import { mulberry32, pickN } from "@/lib/seed";
 
@@ -24,7 +25,6 @@ export function BuildPage() {
   const [lineup, setLineup] = useState<Lineup>(() => readHash() ?? emptyLineup());
   const [activePos, setActivePos] = useState<string | null>(null);
 
-  // Sync URL hash whenever lineup changes (skip if it's already empty + no hash)
   useEffect(() => {
     const hasAny = Object.values(lineup).some(Boolean);
     if (!hasAny && !window.location.hash.startsWith(HASH_PREFIX)) return;
@@ -51,7 +51,6 @@ export function BuildPage() {
   function handleSelect(champId: string) {
     if (!activePos) return;
     setLineup((prev) => ({ ...prev, [activePos]: champId }));
-    // auto-advance to next empty position on the same side
     const idx = POSITIONS.findIndex((p) => p.id === activePos);
     const next = POSITIONS.slice(idx + 1).find((p) => !lineup[p.id] && p.id !== activePos);
     setActivePos(next ? next.id : null);
@@ -78,60 +77,86 @@ export function BuildPage() {
     return `My LoL Football roster (${filledCount}/22) — ${url}`;
   }, [lineup, filledCount]);
 
-  return (
-    <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-teal/80">Create lineup</p>
-          <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">Build your 22-champion roster</h1>
-          <p className="mt-1 text-sm text-white/60">
-            Tap a position, pick a champion. Fill all 22 to share your dream lineup. Looking for the daily puzzle?{" "}
-            <Link href="/grid" className="text-gold hover:underline">Play today's grid →</Link>
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={handleRandomize}
-            className="inline-flex items-center gap-2 rounded-md border border-white/20 px-3 py-2 text-sm text-white/80 hover:bg-white/5"
-          >
-            <Shuffle className="h-4 w-4" /> Randomize
-          </button>
-          <button
-            type="button"
-            onClick={handleClear}
-            disabled={filledCount === 0}
-            className="inline-flex items-center gap-2 rounded-md border border-white/20 px-3 py-2 text-sm text-white/80 disabled:opacity-30 hover:enabled:bg-white/5"
-          >
-            <Trash2 className="h-4 w-4" /> Clear
-          </button>
-          {filledCount > 0 && <ShareButton text={shareText} />}
-        </div>
-      </header>
+  const activePosition = activePos ? POSITIONS.find((p) => p.id === activePos) : null;
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
-        <FootballField
-          lineup={lineup}
-          activePositionId={activePos}
-          onPositionClick={handlePositionClick}
-          onChampionRemove={handleRemove}
-        />
-        <aside className="flex h-[28rem] min-h-0 flex-col gap-3 rounded-xl border border-white/10 bg-navy-900 p-4 lg:h-[42rem]">
-          {activePos ? (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-white/60">Picking for</span>
-              <span className="font-semibold text-gold">{POSITIONS.find((p) => p.id === activePos)?.label}</span>
-            </div>
-          ) : (
-            <p className="text-sm text-white/50">
-              <span className="font-semibold text-white">Tap a position</span> on the field to assign a champion.
-            </p>
-          )}
-          <ChampionPicker
-            onSelect={(c) => handleSelect(c.id)}
-            excludeIds={usedIds}
-            className="min-h-0 flex-1"
+  return (
+    <div className="flex flex-col gap-12">
+      <PageHeader
+        index={1}
+        eyebrow="Create Lineup"
+        title={
+          <>
+            Draft your <span className="text-foil">22-champion</span> football roster.
+          </>
+        }
+        description={
+          <>
+            Tap a position on the field, pick a champion. Fill all 22 to share your dream lineup.{" "}
+            <Link href="/grid" className="inline-flex items-center gap-1 text-foil hover:text-foil-bright">
+              Or play today's grid <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </>
+        }
+        meta={
+          <span>
+            <span className="nums text-parchment-50">{filledCount}</span>
+            <span className="text-parchment-300"> / 22 placed</span>
+          </span>
+        }
+        actions={
+          <>
+            <button type="button" onClick={handleRandomize} className="btn-ghost">
+              <Shuffle className="h-3.5 w-3.5" /> Randomize
+            </button>
+            <button
+              type="button"
+              onClick={handleClear}
+              disabled={filledCount === 0}
+              className="btn-ghost"
+            >
+              <Trash2 className="h-3.5 w-3.5" /> Clear
+            </button>
+            {filledCount > 0 && <ShareButton text={shareText} label="Share Roster" />}
+          </>
+        }
+      />
+
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_24rem]">
+        <div className="animate-fade-up">
+          <FootballField
+            lineup={lineup}
+            activePositionId={activePos}
+            onPositionClick={handlePositionClick}
+            onChampionRemove={handleRemove}
           />
+        </div>
+
+        <aside className="card-plate flex h-[32rem] min-h-0 flex-col gap-4 p-5 lg:h-auto lg:max-h-[44rem]">
+          <div className="flex items-baseline justify-between border-b border-ink-700 pb-3">
+            <span className="eyebrow">{activePosition ? "Picking For" : "Roster Pool"}</span>
+            {activePosition && (
+              <span className="font-display text-base font-bold uppercase tracking-caps-tight text-foil">
+                {activePosition.label}
+              </span>
+            )}
+          </div>
+          {activePosition ? (
+            <ChampionPicker
+              onSelect={(c) => handleSelect(c.id)}
+              excludeIds={usedIds}
+              className="min-h-0 flex-1"
+            />
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
+              <p className="font-display text-lg font-bold uppercase tracking-caps-tight text-parchment-50">
+                Tap a position
+              </p>
+              <p className="max-w-[18rem] text-sm leading-relaxed text-parchment-200">
+                Select an open slot on the field to draft a champion. Filled slots can be tapped to clear.
+              </p>
+              <p className="mt-4 eyebrow-dim">22 Slots · 11 Off · 11 Def</p>
+            </div>
+          )}
         </aside>
       </div>
 
